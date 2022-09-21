@@ -20,4 +20,10 @@
     {% endfor %}
 </table>
 
+<!-- Sesi terakhir dilihat dari cookies -->
+<h5>Sesi terakhir login: {{ last_login }}</h5>
+
+<!-- Handle logout -->
+<button><a href="{% url 'wishlist:logout' %}">Logout</a></button>
+
 {% endblock content %}
