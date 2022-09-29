@@ -6,8 +6,8 @@
 
 {% block content %}
 
-<div class = "login">
-    <h1>Login</h1>
+<div class = "login d-flex align-content-center flex-wrap flex-column align-items-center justify-content-center" style="height: 100vh;">
+    <h1 class="pb-4">Login</h1>
 
     <form method="POST" action="">
         {% csrf_token %}
@@ -21,12 +21,11 @@
                 <td>Password: </td>
                 <td><input type="password" name="password" placeholder="Password" class="form-control"></td>
             </tr>
-
-            <tr>
-                <td></td>
-                <td><input class="btn login_btn" type="submit" value="Login"></td>
-            </tr>
         </table>
+
+        <div class="d-grid py-3">
+            <input class="btn login_btn btn-outline-warning" type="submit" value="Login">
+        </div>
     </form>
 
     {% if messages %}
@@ -37,8 +36,7 @@
         </ul>
     {% endif %}     
         
-    Belum mempunyai akun? <a href="{% url 'wishlist:register' %}">Buat Akun</a>
-
+    Belum mempunyai akun? <a href="{% url 'wishlist:register' %}"><strong>Buat Akun</strong></a>
 </div>
 
 {% endblock content %}
