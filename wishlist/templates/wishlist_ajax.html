@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<nav class="navbar px-3">
+    <h5>{{nama}}</h5>
+
+    <!-- Handle logout -->
+    <a class="btn btn-dark" href="{% url 'wishlist:logout' %}">Logout</a>
+</nav>
+
+<div class="d-flex align-content-center flex-wrap flex-column align-items-center justify-content-center" style="height: 100vh;">
+    <h1 class="pb-4">Submit</h1>
+
+    <form  id="create-wishlist">
+        {% csrf_token %}
+        <table>
+            {{ form.as_table }}
+        </table>
+
+        <input class="btn login_btn btn-outline-warning" type="submit" value="Submit">
+    </form>
+</div>
+
+<div>
+    <table id="wishlist-table" class="table table-dark table-hover" style="height:200px; margin:auto auto;">
+        <tr>
+        <th>Nama</th>
+        <th>Harga Barang</th>
+        <th>Deskripsi</th>
+        </tr>
+        {% comment %} Tambahkan data di bawah baris ini {% endcomment %}
+        <tbody>
+            {% for barang in list_barang %}
+            <tr>
+                <td>{{barang.nama_barang}}</td>
+                <td>{{barang.harga_barang}}</td>
+                <td>{{barang.deskripsi}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Sesi terakhir dilihat dari cookies -->
+<p class="text-center p-4">Sesi terakhir login: {{ last_login }}</p>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function(){
+        $.get("/wishlist/json", function(data) => {
+            var html = '';
+            $(response).each(function(index, barang) {
+                html += "<tr><td>" + barang.nama_barang + "</td><td>" + barang.harga_barang + "</td><td>" + barang.deskripsi + "</td></tr>" 
+            })
+            $("#table tbody").append(html)
+        });
+    });
+
+    $("#create-wishlist").click(function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: "/wishlist/ajax/submit",
+            data: {
+                'nama_barang':nama_barang,
+                'harga_barang': harga_barang,
+                'deskripsi': deskripsi,
+            },
+            type: 'POST',
+            dataType: 'json',
+            success: function(response) {
+                var instance = JSON.parse(response["data"]);
+                var html = '';
+                $(response).each(function(index, barang) {
+                    html += "<tr><td>" + barang.nama_barang + "</td><td>" + barang.harga_barang + "</td><td>" + barang.deskripsi + "</td></tr>" 
+            })
+            $("#table tbody").append(html)
+            error: function (response) {
+                // alert the error if any error occured
+                alert(response["responseJSON"]["error"]);
+            }
+        });
+    });</script>
+
+{% endblock content %}

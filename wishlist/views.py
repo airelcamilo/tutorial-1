@@ -18,6 +18,9 @@ import datetime
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
+from django.http import JsonResponse, HttpResponseBadRequest
+from wishlist.forms import CreateWishlist
+
 # Menampilkan barang wishlist
 @login_required(login_url='/wishlist/login/')
 def show_wishlist(request):
@@ -82,3 +85,26 @@ def login_user(request):
 def logout_user(request):
     logout(request)
     return redirect('wishlist:login')
+
+# Menampilkan /wishlist/ajax
+def wishlist_ajax(request):
+    data_barang_wishlist = BarangWishlist.objects.all()
+    form = CreateWishlist()
+    context = {
+        'list_barang': data_barang_wishlist,
+        'nama': 'Airel Camilo Khairan',
+        # Cookies
+        'last_login': request.COOKIES['last_login'],
+        'form': form
+    }
+    return render(request, "wishlist_ajax.html", context)
+
+# Menyimpan data dari form
+def ajax_submit(request):
+    is_ajax = request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+    form = CreateWishlist(request.POST)
+    if form.is_valid():
+        instance = form.save()
+        data = serializers.serialize('json', [ instance, ])
+        return JsonResponse({'data': data}, status=200)
+    return JsonResponse({'error':""})
